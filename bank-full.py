@@ -155,3 +155,54 @@ print(f'accuracy de train de entrenamiento:{knn.score(x_train, y_train)}')
 print(f'accuracy de test de entrenamiento:{knn.score(x_test,y_test)}')
 #accuracy de validacion
 print(f'accuracy de validacion:{knn.score(x_test_out,y_test_out)}')
+
+
+
+
+# REGRESIÓN LOGÍSTICA CON VALIDACIÓN CRUZADA
+
+kfold = KFold(n_splits=10)
+
+acc_scores_train_train = []
+acc_scores_test_train = []
+logreg = LogisticRegression(solver='lbfgs', max_iter = 7600)
+
+for train, test in kfold.split(x, y):
+    logreg.fit(x[train], y[train])
+    scores_train_train = logreg.score(x[train], y[train])
+    scores_test_train = logreg.score(x[test], y[test])
+    acc_scores_train_train.append(scores_train_train)
+    acc_scores_test_train.append(scores_test_train)
+    
+y_pred = logreg.predict(x_test_out)
+
+print('*'*50)
+print('Regresión Logística Validación cruzada')
+
+# Accuracy de Entrenamiento de Entrenamiento
+print(f'accuracy de Entrenamiento de Entrenamiento: {np.array(acc_scores_train_train).mean()}')
+
+# Accuracy de Test de Entrenamiento
+print(f'accuracy de Test de Entrenamiento: {np.array(acc_scores_test_train).mean()}')
+
+# Accuracy de Validación
+print(f'accuracy de Validación: {logreg.score(x_test_out, y_test_out)}')
+
+
+# Matriz de confusión
+print(f'Matriz de confusión: {confusion_matrix(y_test_out, y_pred)}')
+
+matriz_confusion = confusion_matrix(y_test_out, y_pred)
+plt.figure(figsize = (6, 6))
+sns.heatmap(matriz_confusion)
+plt.title("Mariz de confución")
+
+precision = precision_score(y_test_out, y_pred, average=None).mean()
+print(f'Precisión: {precision}')
+
+recall = recall_score(y_test_out, y_pred, average=None).mean()
+print(f'Re-call: {recall}')
+
+f1_score_1 = f1_score(y_test_out, y_pred, average=None).mean()
+
+print(f'f1: {f1_score_1}')
